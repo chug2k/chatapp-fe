@@ -17,6 +17,11 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
+  const [total, setTotal] = useState(0);
+  const [yesCount, setYesCount] = useState(0);
+  const [maybeCount, setMaybeCount] = useState(0);
+  const [noCount, setNoCount] = useState(0);
+
   useEffect(() => {
     socket.on("receive", (msg) => {
       setMessages([...messages, msg]);
@@ -34,6 +39,21 @@ function App() {
     socket.emit("vote", vote);
   };
 
+  useEffect(() => {
+    socket.on("receiveVote", (vote) => {
+      setTotal(total + 1);
+      if (vote === "yes") {
+        setYesCount(yesCount + 1);
+      }
+      if (vote === "maybe") {
+        setMaybeCount(maybeCount + 1);
+      }
+      if (vote === "no") {
+        setNoCount(noCount + 1);
+      }
+    });
+  }, [total, yesCount, maybeCount, noCount]);
+
   return (
     <div className="App">
       <h1> Hello World! </h1>
@@ -49,9 +69,17 @@ function App() {
           No
         </Button>
 
-        <ProgressBar now={50} animated variant="success" />
-        <ProgressBar now={50} animated variant="warning" />
-        <ProgressBar now={50} animated variant="danger" />
+        <ProgressBar
+          now={(yesCount / total) * 100}
+          animated
+          variant="success"
+        />
+        <ProgressBar
+          now={(maybeCount / total) * 100}
+          animated
+          variant="warning"
+        />
+        <ProgressBar now={(noCount / total) * 100} animated variant="danger" />
       </Container>
 
       <form onSubmit={sendMessage}>
