@@ -8,7 +8,7 @@ let socket;
 
 function App() {
   useEffect(() => {
-    socket = socketIOClient("http://9091e0bcc2e2.ngrok.io");
+    socket = socketIOClient("https://9091e0bcc2e2.ngrok.io");
     return () => {
       socket.disconnect();
     };
@@ -30,14 +30,24 @@ function App() {
     setNewMessage("");
   };
 
+  const sendVote = (vote) => {
+    socket.emit("vote", vote);
+  };
+
   return (
     <div className="App">
       <h1> Hello World! </h1>
       <Container>
         <h2>Does today's lesson make sense?</h2>
-        <Button variant="success">Yes</Button>
-        <Button variant="warning">Maybe</Button>
-        <Button variant="danger">No</Button>
+        <Button variant="success" onClick={() => sendVote("yes")}>
+          Yes
+        </Button>
+        <Button variant="warning" onClick={() => sendVote("maybe")}>
+          Maybe
+        </Button>
+        <Button variant="danger" onClick={() => sendVote("no")}>
+          No
+        </Button>
 
         <ProgressBar now={50} animated variant="success" />
         <ProgressBar now={50} animated variant="warning" />
